@@ -1,6 +1,6 @@
 var margin = {top: 10, right: 10, bottom: 20, left: 40},
   width = 760 - margin.left - margin.right,
-  height = 1000 - margin.top - margin.bottom;
+  height = 780 - margin.top - margin.bottom;
 
 var vis = d3.select("body").append("svg:svg")
   .attr("class", "chart")
@@ -25,7 +25,7 @@ d3.csv("data/2012facultymajor.csv",  function(d) {
     });
 
     rows.sort( function(a, b) {
-        if (a.fsratio > b.fsratio) {
+        if (a.ratio < b.ratio) {
           return -1;
         } else if (a.ratio == b.ratio) {
           return 0;
@@ -50,13 +50,10 @@ d3.csv("data/2012facultymajor.csv",  function(d) {
       .domain(d3.range(rows.length))
       .range([0, y0.rangeBand()]);
 
-    var colors = {"ratio":"#f2c180", "fsratio":"#f3a53d", "students":"#5cadf0","faculty":"steelblue"};
-
     vis.append("g")
       .attr("class", "x axis")
-      .attr("transform", "translate("+ width/2+"," + margin.top + ")")
-
-      .call(d3.svg.axis().scale(x).orient("top"));
+      .attr("transform", "translate("+ width/2+"," + height + ")")
+      .call(d3.svg.axis().scale(x).orient("bottom"));
 
     vis.append("g")
       .attr("class", "xpercent axis")
@@ -68,7 +65,7 @@ d3.csv("data/2012facultymajor.csv",  function(d) {
       .data(rows)
     .enter().append("svg:g")
       .attr("class","department")
-      .attr("transform", function(d,i) { return "translate(0," + (33 + i * 35) + ")"});
+      .attr("transform", function(d,i) { return "translate(0," + (20 + i * 26) + ")"});
 
     departments.selectAll("rect")
       .data(function(d){return d.stuff;})
@@ -79,7 +76,9 @@ d3.csv("data/2012facultymajor.csv",  function(d) {
         return width/2;})
 
       .attr("y", function(d, i){
-        return (i%2) * 11;
+        if (d.name == "ratio" || d.name == "fsratio")
+          return 0;
+        return i * 11;
       })
       .attr("width", function(d) {
           if (d.name == "ratio" || d.name == "fsratio")
@@ -88,15 +87,16 @@ d3.csv("data/2012facultymajor.csv",  function(d) {
         })
       .attr("height", 10)
       .style("fill",function(d) {
-	  return colors[d.name];
+        if (d.name == "ratio" || d.name == "fsratio")
+            return "orange";
+        return "steelblue";
         })
 
 
     departments.append("text")
       .attr("x", width/2)
       .attr("y", 0)
-    .attr("dy","-.25em")
-    
+
       .style("text-anchor","end")
       .text(function(d){return d.dept;});
 
