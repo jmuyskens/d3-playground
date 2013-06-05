@@ -1,4 +1,4 @@
-
+var isAscending = 1;
 
 d3.csv("data/2012facultymajor.csv",  function(d) {
   return {
@@ -10,13 +10,13 @@ d3.csv("data/2012facultymajor.csv",  function(d) {
   };
 }, function(error, rows) {
 
-    var margin = {top: 10, right: 10, bottom: 20, left: 40},
+    var margin = {top: 10, right: 40, bottom: 20, left: 40},
         depth  = 35,
-        width  = 760 - margin.left - margin.right,
-        height = depth * rows.length;
+        width  = 860 - margin.left - margin.right,
+        height = depth * rows.length + 30;
 
 
-    var vis = d3.select("body").append("svg:svg")
+    var vis = d3.select("#wrap").append("svg:svg")
       .attr("class", "chart")
       .attr("width", width + margin.left + margin.right)
       .attr("height", height + margin.top + margin.bottom)
@@ -49,16 +49,50 @@ d3.csv("data/2012facultymajor.csv",  function(d) {
       .domain(d3.range(rows.length))
       .range([0, y0.rangeBand()]);
 
+    function make_x_axis() {
+      return d3.svg.axis()
+        .scale(x)
+        .orient("bottom")
+        .ticks(8)
+    }
+
+    function make_xpercent_axis() {
+      return d3.svg.axis()
+        .scale(xpercent)
+        .orient("bottom")
+        .ticks(8)
+    }
 
     vis.append("g")
       .attr("class", "x axis")
       .attr("transform", "translate("+ width/2+"," + margin.top + ")")
-      .call(d3.svg.axis().scale(x).orient("top"));
+      .call(make_x_axis().orient("top").ticks(5));
+
+    vis.append("g")
+      .attr("class", "x axis")
+      .attr("transform", "translate("+ width/2+"," + height + ")")
+      .call(make_x_axis().ticks(5));
+
+    vis.append("g")
+      .attr("class", "grid")
+      .attr("transform", "translate("+ width/2+"," + height + ")")
+      .call(make_x_axis().tickSize(margin.top-height, 0, 0).tickFormat(""));
 
     vis.append("g")
       .attr("class", "xpercent axis")
       .attr("transform", "translate(0," + margin.top + ")")
-      .call(d3.svg.axis().scale(xpercent).orient("top"));
+      .call(make_xpercent_axis().orient("top").ticks(5));
+
+  vis.append("g")
+      .attr("class", "xpercent axis")
+      .attr("transform", "translate(0," + height + ")")
+      .call(make_xpercent_axis().ticks(5));
+
+  vis.append("g")
+      .attr("class", "grid")
+      .attr("transform", "translate(0," + height + ")")
+      .call(make_xpercent_axis().tickSize(margin.top-height, 0, 0).tickFormat(""));
+
 
     var departments = vis.selectAll("g.department")
       .data(rows, function(d) { return d.dept; })
@@ -86,14 +120,14 @@ d3.csv("data/2012facultymajor.csv",  function(d) {
     .on("click", function(d){ rearrange(d);});
 
     var rearrange = function(d) {
-       departments.sort(function(a, b){ return b[d.name] - a[d.name]; });
+       departments.sort(function(a, b){ return isAscending * (b[d.name] - a[d.name]); });
        departments.transition(departments)
           .duration(750)
           .delay(function(d, i){ return (i * 20);})
           .attr("transform", function(d, i) { return "translate(0," + (33 + i * 35) + ")"; });
 
       //rects.on("click", function(d){ rebrrange(d);});
-    }
+    };
 
     var rebrrange = function(d) {
         departments.sort(function(a, b){ return a[d.name] - b[d.name]; });
@@ -102,9 +136,15 @@ d3.csv("data/2012facultymajor.csv",  function(d) {
           .duration(750)
           .delay(function(d, i){ return i * 20;})
           .attr("transform", function(d, i) { return "translate(0," + (33 + i * 35) + ")"; });
-        rects.on("click", function(d){ rearrange(d);});
-        }
+//        rects.on("click", function(d){ rearrange(d);});
+        };
 
+   rects.append("text")
+      .attr("x",0)
+      .attr("y",0)
+      .attr("dy","-2.5em")
+      .style("text-anchor","end")
+      .text(function(d){return "hello, world"; });
 
 
     departments.append("text")
@@ -117,3 +157,9 @@ d3.csv("data/2012facultymajor.csv",  function(d) {
 }
 );
 
+function ascending() {
+  isAscending = 1;
+}
+function descending() {
+  isAscending = -1;
+}

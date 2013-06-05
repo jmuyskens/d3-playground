@@ -6,7 +6,12 @@
     svg {
       font: 10px sans-serif;
       background: white;
-      margin: 0 auto;
+      display:block;
+      margin:0 auto;
+    }
+    button {
+      clear:right;
+      float:right;
     }
     .chart rect {
       stroke: white;
@@ -22,6 +27,12 @@
       stroke:#000;
       shape-rendering: crispEdges;
     }
+    .grid {
+      fill:none;
+      stroke-width:0.5px;
+      stroke:#000;
+      opacity:0.2;
+    }
     .ratio {
       fill:#f2c180;
     }
@@ -34,10 +45,17 @@
     .faculty {
       fill:steelblue;
     }
-
+    #wrap {
+      width:910px;
+      margin:0 auto;
+    }
   </style>
 </head>
 <body>
+  <div id="wrap">
+    <button onClick="ascending()">↑</button>
+    <button onClick="descending()"s>↓</button>
+  </div>
   <script src="http://d3js.org/d3.v3.min.js"></script>
   <script src="facultymajor.js"></script>
 </body>
